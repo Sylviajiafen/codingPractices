@@ -33,35 +33,44 @@ class SelectionView: UIView {
         
         indicatorView.frame.origin.x = sender.frame.origin.x
     
-        self.delegate?.didSelectAt(sender)
+        self.delegate?.didSelectAt(sender, self)
+        
     }
     
     func addBtn() {
         
         guard let dataSource = self.dataSource else {return}
         
-        let btnCount = dataSource.selectionQty()
+        let btnCount = dataSource.selectionQty(self)
         
         for number in 0..<btnCount {
             
             let btnWidth = self.frame.width / CGFloat(btnCount)
             
+            let viewHeight = self.frame.height
             
-            let button = UIButton(frame: CGRect(x: btnWidth * CGFloat(number), y: 0, width: btnWidth, height: 78.0))
+            let button = UIButton(frame: CGRect(x: btnWidth * CGFloat(number), y: 0, width: btnWidth, height: viewHeight - 2))
             
-            button.setTitle(dataSource.selectionText()[number], for: .normal)
+            button.setTitle(dataSource.selectionText(self)[number], for: .normal)
             
-            button.titleLabel?.font = dataSource.selectionTextFont()
+            button.titleLabel?.font = dataSource.selectionTextFont(self)
             
-            button.setTitleColor(dataSource.selectionTextColor(), for: .normal)
+            button.setTitleColor(dataSource.selectionTextColor(self), for: .normal)
             
             button.backgroundColor = .black
             
-            button.addTarget(self, action: #selector(touchBtn(sender:)), for: .touchUpInside)
+            btnArr.append(button)
+        
+            for btn in btnArr {
+                
+                self.addSubview(btn)
+
+                if btn.isEnabled == true {
+                    
+                    btn.addTarget(self, action: #selector(touchBtn(sender:)), for: .touchUpInside)
+                }
+            }
             
-            self.addSubview(button)
-            
-            self.bringSubviewToFront(button)
 
         }
         
@@ -72,9 +81,9 @@ class SelectionView: UIView {
         
         guard let dataSource = self.dataSource else {return}
         
-        indicatorView.backgroundColor = dataSource.indicatorColor()
+        indicatorView.backgroundColor = dataSource.indicatorColor(self)
         
-        indicatorView.frame = CGRect(x: 0, y: 80, width: selectionWidth/dataSource.selectionQty(), height: 2)
+        indicatorView.frame = CGRect(x: 0, y: Int(self.frame.height), width: selectionWidth/dataSource.selectionQty(self), height: 4)
         
         self.addSubview(indicatorView)
     }
@@ -83,20 +92,27 @@ class SelectionView: UIView {
     
     let selectionWidth = Int(UIScreen.main.bounds.width)
     
+    var btnArr: [UIButton] = []
+    
+//    func unableBtn(at: Int) {
+//
+//        btnArr[at].isEnabled = self.delegate?.unableSelection(at: at, self) ?? false
+//    }
+    
     
 }
 
 protocol SelectionViewDataSource: AnyObject {
     
-    func indicatorColor() -> UIColor
+    func indicatorColor(_ view: SelectionView) -> UIColor
     
-    func selectionTextColor() -> UIColor
+    func selectionTextColor(_ view: SelectionView) -> UIColor
     
-    func selectionTextFont() -> UIFont
+    func selectionTextFont(_ view: SelectionView) -> UIFont
     
-    func selectionText() -> [String]
+    func selectionText(_ view: SelectionView) -> [String]
     
-    func selectionQty() -> Int
+    func selectionQty(_ view: SelectionView) -> Int
     
 
 }
@@ -104,24 +120,24 @@ protocol SelectionViewDataSource: AnyObject {
 // default settings
 extension SelectionViewDataSource {
 
-    func indicatorColor() -> UIColor {
+    func indicatorColor(_ view: SelectionView) -> UIColor {
         return .blue
     }
     
-    func selectionTextColor() -> UIColor {
+    func selectionTextColor(_ view: SelectionView) -> UIColor {
         return .white
     }
     
-    func selectionTextFont() -> UIFont {
+    func selectionTextFont(_ view: SelectionView) -> UIFont {
         return UIFont.systemFont(ofSize: 18)
     }
     
-    func selectionText() -> [String] {
+    func selectionText(_ view: SelectionView) -> [String] {
         
         return ["Red", "Yellow", "blue"]
     }
     
-    func selectionQty() -> Int {
+    func selectionQty(_ view: SelectionView) -> Int {
         return 3
     }
 
@@ -129,21 +145,30 @@ extension SelectionViewDataSource {
 
 protocol SelectionViewDelegate: AnyObject {
     
-    func didSelectAt(_ selection: UIButton)
+    func didSelectAt(_ selection: UIButton,_ view: SelectionView)
     
-    func enableSelection(_ selection: UIButton) -> Bool
+    func unableSelection(at: Int,_ view: SelectionView)
+    
+    func enableSelection(at: Int,_ view: SelectionView)
 }
 
 extension SelectionViewDelegate {
     
-    func didSelectAt(_ selection: UIButton) {
+    func didSelectAt(_ selection: UIButton,_ view: SelectionView) {
         
         print("點擊")
         
     }
     
-    func enableSelection(_ selection: UIButton) -> Bool {
-        return true
+    func unableSelection(at: Int,_ view: SelectionView) {
+        
+        view.btnArr[at].isEnabled = false
+        
     }
     
+    func enableSelection(at: Int,_ view: SelectionView) {
+        
+        view.btnArr[at].isEnabled = true
+        
+    }
 }
