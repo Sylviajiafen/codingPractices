@@ -31,9 +31,13 @@ class SelectionView: UIView {
     
     @objc func touchBtn(sender: UIButton) {
         
-        indicatorView.frame.origin.x = sender.frame.origin.x
+        guard self.delegate?.canSelectBtn(at: sender.tag, self) == true else { return }
+        
+            indicatorView.frame.origin.x = sender.frame.origin.x
     
-        self.delegate?.didSelectAt(sender, self)
+            self.delegate?.didSelectAt(sender.tag, sender, self)
+        
+            selectedTag = sender.tag
         
     }
     
@@ -59,17 +63,19 @@ class SelectionView: UIView {
             
             button.backgroundColor = .black
             
-            btnArr.append(button)
-        
-            for btn in btnArr {
-                
-                self.addSubview(btn)
+            button.tag = number
+            
+//            btnArr.append(button)
+//
+//            for btn in btnArr {
+//
+            self.addSubview(button)
 
-                if btn.isEnabled == true {
-                    
-                    btn.addTarget(self, action: #selector(touchBtn(sender:)), for: .touchUpInside)
-                }
-            }
+//                if btn.isEnabled == true {
+            
+            button.addTarget(self, action: #selector(touchBtn(sender:)), for: .touchUpInside)
+//                }
+//            }
             
 
         }
@@ -88,11 +94,15 @@ class SelectionView: UIView {
         self.addSubview(indicatorView)
     }
 
-    let indicatorView = UIView()
+    private let indicatorView = UIView()
     
     let selectionWidth = Int(UIScreen.main.bounds.width)
     
     var btnArr: [UIButton] = []
+    
+    var selectedTag: Int?
+    
+    
     
 //    func unableBtn(at: Int) {
 //
@@ -145,7 +155,9 @@ extension SelectionViewDataSource {
 
 protocol SelectionViewDelegate: AnyObject {
     
-    func didSelectAt(_ selection: UIButton,_ view: SelectionView)
+    func didSelectAt(_ index: Int,_ selection: UIButton,_ view: SelectionView)
+    
+    func canSelectBtn(at: Int, _ view: SelectionView ) -> Bool
     
     func unableSelection(at: Int,_ view: SelectionView)
     
@@ -154,10 +166,15 @@ protocol SelectionViewDelegate: AnyObject {
 
 extension SelectionViewDelegate {
     
-    func didSelectAt(_ selection: UIButton,_ view: SelectionView) {
+    func didSelectAt(_ index: Int,_ selection: UIButton,_ view: SelectionView) {
         
         print("點擊")
         
+    }
+    
+    
+    func canSelectBtn(at: Int, _ view: SelectionView ) -> Bool {
+        return true
     }
     
     func unableSelection(at: Int,_ view: SelectionView) {

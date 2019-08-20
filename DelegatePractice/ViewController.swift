@@ -54,6 +54,9 @@ class ViewController: UIViewController {
     
     let belowColorView = UIView()
    
+    let topBtnArr = ["Red", "Yellow"]
+    
+    let belowBtnArr = ["Red", "Yellow", "Blue"]
     
 }
 
@@ -63,11 +66,11 @@ extension ViewController: SelectionViewDataSource {
         
         if view == topSelectionView {
             
-            return 2
+            return topBtnArr.count
             
         } else {
             
-            return 3
+            return belowBtnArr.count
         }
     }
     
@@ -75,11 +78,11 @@ extension ViewController: SelectionViewDataSource {
         
         if view == topSelectionView {
             
-            return ["Red", "Yellow"]
+            return topBtnArr
             
         } else {
             
-            return ["Red", "Yellow", "Blue"]
+            return belowBtnArr
         }
     }
    
@@ -87,37 +90,34 @@ extension ViewController: SelectionViewDataSource {
 
 extension ViewController: SelectionViewDelegate {
     
-    func didSelectAt(_ selection: UIButton, _ view: SelectionView) {
+    
+    func didSelectAt(_ index: Int,_ selection: UIButton,_ view: SelectionView)  {
         
         if view == topSelectionView {
             
-            let btnCount = view.btnArr.count
-            
-            if selection == view.btnArr[btnCount - 1] {
+            if index == topBtnArr.count - 1 {
                 
                 print("final")
                 
                 topColorView.backgroundColor = .yellow
                 
-                let belowView = belowSelectionView
-                
-                let btnBelowCount = belowView.btnArr.count
-                
-                for index in 0..<btnBelowCount {
-                
-                    unableSelection(at: index, belowView)
-                }
+//                let btnBelowCount = selectionQty(belowSelectionView)
+//
+//                for index in 0..<btnBelowCount {
+//
+//                    canSelectBtn(at: index, belowSelectionView)
+//                }
                 
             } else {
                 
                 topColorView.backgroundColor = .red
                 
-                let belowView = belowSelectionView
-                
-                for btn in belowView.btnArr {
-                    
-                    btn.isEnabled = true
-                }
+//                let btnBelowCount = selectionQty(belowSelectionView)
+//
+//                for index in 0..<btnBelowCount {
+//
+//                    enableSelection(at: index, belowSelectionView)
+//                }
                 
             }
         }
@@ -125,19 +125,44 @@ extension ViewController: SelectionViewDelegate {
         
         if view == belowSelectionView {
             
-            if selection == view.btnArr[0] {
+            if index == 0 {
                 
                 belowColorView.backgroundColor = .red
                 
-            } else if selection == view.btnArr[1] {
+            } else if index == 1 {
                 
                 belowColorView.backgroundColor = .yellow
             
-            } else if selection == view.btnArr[2] {
+            } else if index == 2 {
                 
                 belowColorView.backgroundColor = .blue
             }
             
+            
+        }
+    }
+    
+    
+    func canSelectBtn(at: Int, _ view: SelectionView) -> Bool {
+    
+        if view == topSelectionView {
+            
+            return true
+            
+        } else if view == belowSelectionView {
+            
+            if topSelectionView.selectedTag == topBtnArr.count - 1 {
+    
+                return false
+                
+            } else {
+                
+                return true
+            }
+            
+        } else {
+            
+            return true
             
         }
     }
