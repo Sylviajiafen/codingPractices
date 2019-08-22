@@ -5,6 +5,7 @@
 - [x] 提供 Button，使用者可與 SelectionView 互動
 - [x] 提供一個 indicatorView，當使用者點選某一 Button 時，indicatorView 會跟著移動到 Button 下方
 - [x] ViewController 欲使用 SelectionView 時，僅須：
+
       * Create SelectionView 的 instance
       * ViewController confirm SelectionViewDataSource & SelectionViewDelegate
       * assign ViewController 到 SelectionView 的變數 delegate 與 dataSource 中
