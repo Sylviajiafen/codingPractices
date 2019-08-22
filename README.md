@@ -1,5 +1,5 @@
-# codingPractices
-## **Practice 1 - Delegate**
+# codingPractices -1
+## **Delegate**
 
 設計了一個名為 SelectionView 的 class， 
 - [x] 提供 Button，使用者可與 SelectionView 互動
